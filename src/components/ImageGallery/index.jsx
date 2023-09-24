@@ -1,45 +1,41 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import css from './ImageGallery.module.css';
-import { Modal } from 'components/Modal';
+import Modal from 'components/Modal';
 import PropTypes from 'prop-types';
 
-export class ImageGallery extends Component {
-  state = {
-    largeImageURL: null,
-    showModal: false,
+const ImageGallery = ({ galleryImages }) => {
+  const [largeImageURL, setLargeImageURL] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = largeImageURL => {
+    setLargeImageURL(largeImageURL);
+    setShowModal(true);
   };
 
-  openModal = largeImageURL => {
-    this.setState({ largeImageURL: largeImageURL, showModal: true });
+  const closeModal = () => {
+    setLargeImageURL(null);
+    setShowModal(false);
   };
 
-  closeModal = () => {
-    this.setState({ largeImageURL: null, showModal: false });
-  };
-
-  render() {
-    const { galleryImages } = this.props;
-    const { showModal, largeImageURL } = this.state;
-    return (
-      <>
-        <ul className={css.ImageGallery}>
-          {galleryImages.map(({ id, webformatURL, largeImageURL, tags }) => (
-            <ImageGalleryItem
-              key={id}
-              webformatURL={webformatURL}
-              tags={tags}
-              onOpenModal={() => this.openModal(largeImageURL)}
-            />
-          ))}
-          {showModal && (
-            <Modal largeImageURL={largeImageURL} onClose={this.closeModal} />
-          )}
-        </ul>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <ul className={css.ImageGallery}>
+        {galleryImages.map(({ id, webformatURL, largeImageURL, tags }) => (
+          <ImageGalleryItem
+            key={id}
+            webformatURL={webformatURL}
+            tags={tags}
+            onOpenModal={() => openModal(largeImageURL)}
+          />
+        ))}
+        {showModal && (
+          <Modal largeImageURL={largeImageURL} onClose={closeModal} />
+        )}
+      </ul>
+    </>
+  );
+};
 
 ImageGallery.propTypes = {
   galleryImages: PropTypes.arrayOf(
@@ -51,3 +47,5 @@ ImageGallery.propTypes = {
     }).isRequired
   ).isRequired,
 };
+
+export default ImageGallery;
